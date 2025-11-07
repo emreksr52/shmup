@@ -7,10 +7,16 @@ shipspd_x = 0
 shipspd_y = 0
 
 bullx = 64
-bully= 40
+bully= -10
+shipspr = 2
+flamespr = 5
+muzzle = 0
+bulletspr = 16
 end
 
 function _update()
+
+    shipspr = 2
 
     shipspd_x = 0
     shipspd_y = 0
@@ -19,10 +25,12 @@ function _update()
 
     if btn(0) then
         shipspd_x = -2
+        shipspr = 1
     end
 
     if btn(1) then
         shipspd_x = 2
+        shipspr = 3
     end
 
     if btn(2) then
@@ -37,6 +45,7 @@ function _update()
         bully = ship_y - 5
         bullx = ship_x
         spr(002, ship_x, ship_y)
+        muzzle = 5
         sfx(0)
     end
 
@@ -60,20 +69,49 @@ function _update()
         ship_y = 0
     end
 
-   
+    flamespr = flamespr +1
 
+    if flamespr > 9 then
+        flamespr = 5
+    end
+    if muzzle > 0  then
+    muzzle = muzzle - 1
+    end
 
-end
+    if bulletspr > 15  then
+    bulletspr = bulletspr + 1
+    end
+
+    end
 
 function _draw()
     cls()
-    draw_ship()
-    spr(002, bullx, bully)
+    draw_ship(shipspr)
+    draw_flame(flamespr)
+    spr(bulletspr, bullx, bully)
+    if bulletspr > 21 then
+        bulletspr = 16
+    end
+    
+    if muzzle > 0  then
+        circfill(ship_x + 4, ship_y - 1,muzzle, 7)
+    end
+    
+    
    
 end
 
-function draw_ship()
-    spr(001, ship_x, ship_y)
+function draw_ship(shipspr)
+    spr(shipspr, ship_x, ship_y)
+    
+end
+
+function draw_flame(flamespr)
+    spr(flamespr, ship_x, ship_y + 8)
+end
+
+function animate_flame(flamespr)
+    
     
 end
 
