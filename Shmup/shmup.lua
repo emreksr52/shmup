@@ -12,6 +12,11 @@ shipspr = 2
 flamespr = 5
 muzzle = 0
 bulletspr = 16
+
+score = 0
+lives = 3
+bombs = 3
+
 end
 
 function _update()
@@ -47,6 +52,8 @@ function _update()
         spr(002, ship_x, ship_y)
         muzzle = 5
         sfx(0)
+        score = score + 100
+        bombs = bombs - 1
     end
 
 
@@ -96,7 +103,27 @@ function _draw()
     if muzzle > 0  then
         circfill(ship_x + 4, ship_y - 1,muzzle, 7)
     end
+    print("score:" ..score, 40, 1, 12)
     
+
+    for i = 1, 3 do
+        if lives >=i then
+        spr(13, i*9 - 8, 1)
+        else
+        spr(14, i*9 - 8, 1)   
+        end
+        
+    end
+
+    for i = 1, 3 do
+        if bombs >=i then
+        spr(29, i*9 + 100 - 8, 1)
+        else
+        spr(30, i*9 + 100 - 8, 1)   
+        end
+        
+    end
+  
     
    
 end
