@@ -16,10 +16,21 @@ bulletspr = 16
 score = 0
 lives = 3
 bombs = 3
+starsx = {}
+starsy = {}
+
+ for i = 1, 100 do
+        add(starsx, rnd(128))
+        add(starsy, rnd(128)) 
+    end
+
+starfield()
 
 end
 
 function _update()
+
+    
 
     shipspr = 2
 
@@ -89,10 +100,15 @@ function _update()
     bulletspr = bulletspr + 1
     end
 
+    animate_stars()
+
     end
+
+    
 
 function _draw()
     cls()
+    starfield()
     draw_ship(shipspr)
     draw_flame(flamespr)
     spr(bulletspr, bullx, bully)
@@ -145,3 +161,22 @@ end
 function move_ship()
 end
 
+function starfield()
+    for i = 1, #starsx do
+        pset(starsx[i],(starsy[i]),7)  
+    end
+end
+
+function animate_stars()
+    
+    for i = 1, #starsy do
+        local sy = starsy[i]
+        sy = sy + 1
+         if sy>128 then
+            sy = sy - 128
+        end
+        starsy[i] = sy
+       
+    end
+    
+end
