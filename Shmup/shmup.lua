@@ -1,36 +1,92 @@
 function _init()
 cls(0)
-ship_x = 64
-ship_y = 64
-mini = 99
-shipspd_x = 0
-shipspd_y = 0
-
-bullx = 64
-bully= -10
-shipspr = 2
-flamespr = 5
-muzzle = 0
-bulletspr = 16
-
-score = 0
-lives = 3
-bombs = 3
-starsx = {}
-starsy = {}
-
- for i = 1, 100 do
-        add(starsx, rnd(128))
-        add(starsy, rnd(128)) 
-    end
-
-starfield()
-
+mode = "Start"
+blinkt = 0
+real_time = 0
+fps = 0
 end
 
 function _update()
+    blinkt += 1
+    if mode == "Start" then
+        start_button()
+    elseif mode == "Game" then
+        update_game()
+    elseif mode == "Over" then
+        game_over()
+    elseif mode == "Countdown" then
+        return 0  
+    end
+end
 
+
+function _draw()
+    if mode == "Game" then
+        draw_game()
+    elseif mode == "Start" then
+        draw_start()
+    else
+        
+    end
+    print_logs()
+
+   
+end
+
+function print_logs()
+    print("Mode= "..mode, 40, 10, 7)
+    print("Real time= "..real_time, 65, 20, 7)
+end
+
+function draw_ship(shipspr)
+    spr(shipspr, ship_x, ship_y)
     
+end
+
+function draw_flame(flamespr)
+    spr(flamespr, ship_x, ship_y + 8)
+end
+
+function animate_flame(flamespr)
+    
+    
+end
+
+function move_ship()
+end
+
+function starfield()
+    for i = 1, #starsx do
+    local starcol = 6
+        if starspd[i] < 1.5 then
+            starcol = 1
+        elseif starspd[i] < 1 then
+            starcol = 13
+        end
+
+        if starspd[i] > 2.45 then
+            spr(32,starsx[i],starsy[i])
+        else
+            pset(starsx[i],(starsy[i]),starcol) 
+        end
+    end
+end
+
+function animate_stars()
+    
+    for i = 1, #starsy do
+        local sy = starsy[i]
+        sy = sy + starspd[i]
+         if sy>128 then
+            sy = sy - 128
+        end
+        starsy[i] = sy
+       
+    end
+    
+end
+
+function update_game()
 
     shipspr = 2
 
@@ -65,6 +121,14 @@ function _update()
         sfx(0)
         score = score + 100
         bombs = bombs - 1
+    end
+    if btnp(4) then
+            mode = "Start"
+            draw_start()
+    end
+
+    if bombs == 0 then
+        mode = "Over"
     end
 
 
@@ -104,10 +168,8 @@ function _update()
 
     end
 
-    
-
-function _draw()
-    cls()
+    function draw_game()
+        cls()
     starfield()
     draw_ship(shipspr)
     draw_flame(flamespr)
@@ -139,44 +201,66 @@ function _draw()
         end
         
     end
-  
-    
-   
-end
 
-function draw_ship(shipspr)
-    spr(shipspr, ship_x, ship_y)
-    
-end
-
-function draw_flame(flamespr)
-    spr(flamespr, ship_x, ship_y + 8)
-end
-
-function animate_flame(flamespr)
-    
-    
-end
-
-function move_ship()
-end
-
-function starfield()
-    for i = 1, #starsx do
-        pset(starsx[i],(starsy[i]),7)  
     end
-end
 
-function animate_stars()
-    
-    for i = 1, #starsy do
-        local sy = starsy[i]
-        sy = sy + 1
-         if sy>128 then
-            sy = sy - 128
+      function draw_start()
+        cls(2)
+        print("my Awesome Shmup", 34, 40)
+        print("press Any Key to Start",24 , 70)
+        
+    end
+
+    function start_button()
+        if btnp(4) then
+                start_game()
         end
-        starsy[i] = sy
-       
+
     end
-    
-end
+
+    function start_game()
+        mode = "Game"
+        ship_x = 64
+        ship_y = 64
+        mini = 99
+        shipspd_x = 0
+        shipspd_y = 0
+
+        bullx = 64
+        bully= -10
+        shipspr = 2
+        flamespr = 5
+        muzzle = 0
+        bulletspr = 16
+
+        score = 0
+        lives = 3
+        bombs = 3
+        starsx = {}
+        starsy = {}
+        starspd = {}
+
+        for i = 1, 100 do
+                add(starsx, rnd(128))
+                add(starsy, rnd(128))
+                add(starspd, rnd(2)+0.5)
+        end
+    end
+
+    function game_over()
+        cls(8)
+        print("game over!", 50, 50, blink())
+          
+    end
+
+    function blink()
+        local eanim = {5,5,5,5,5,5,6,7,7}
+
+        if blinkt > #eanim then
+            blinkt = 1
+        end
+        return eanim[blinkt]
+    end
+
+
+   
