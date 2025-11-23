@@ -56,34 +56,37 @@ function move_ship()
 end
 
 function starfield()
-    for i = 1, #starsx do
-    local starcol = 6
-        if starspd[i] < 1.5 then
-            starcol = 1
-        elseif starspd[i] < 1 then
-            starcol = 13
+    for i=1,#stars do
+        local s = stars[i]
+        local col = 6
+
+        -- renk seçimi
+        if s.spd < 1 then
+            col = 13
+        elseif s.spd < 1.5 then
+            col = 1
         end
 
-        if starspd[i] > 2.45 then
-            spr(32,starsx[i],starsy[i])
+        -- çizim
+        if s.spd > 2.45 then
+            spr(32, s.x, s.y)
         else
-            pset(starsx[i],(starsy[i]),starcol) 
+            pset(s.x, s.y, col)
         end
     end
 end
 
+
+
 function animate_stars()
     
-    for i = 1, #starsy do
-        local sy = starsy[i]
-        sy = sy + starspd[i]
-         if sy>128 then
-            sy = sy - 128
-        end
-        starsy[i] = sy
-       
+    for i=1, #stars do
+        local mystar = stars[i]
+        mystar.y = mystar.y + mystar.spd
+        if mystar.y>128 then
+            mystar.y = mystar.y - 128
+        end  
     end
-    
 end
 
 function update_game()
@@ -206,6 +209,7 @@ function update_game()
 
       function draw_start()
         cls(2)
+
         print("my Awesome Shmup", 34, 40)
         print("press Any Key to Start",24 , 70)
         
@@ -213,6 +217,11 @@ function update_game()
 
     function start_button()
         if btnp(4) then
+            local start_time = time()
+
+            if time()  then
+                
+            end
                 start_game()
         end
 
@@ -245,7 +254,25 @@ function update_game()
                 add(starsy, rnd(128))
                 add(starspd, rnd(2)+0.5)
         end
+
+    stars = {}
+
+    for i = 1, 100 do
+        local newstar={}
+        newstar.x = rnd(128)
+        newstar.y = rnd(128)
+        newstar.spd = rnd(2)+0.5
+        add(stars, newstar)
+        end
     end
+
+  
+    
+    
+
+    -----stars-----
+
+
 
     function game_over()
         cls(8)
