@@ -4,6 +4,10 @@ mode = "Start"
 blinkt = 0
 real_time = 0
 fps = 0
+buls = {}
+enemies = {}
+bulnum = 1
+create_enemies()
 end
 
 function _update()
@@ -39,12 +43,12 @@ function print_logs()
 end
 
 function draw_ship(shipspr)
-    spr(shipspr, ship_x, ship_y)
+    spr(ship.spr, ship.x, ship.y)
     
 end
 
 function draw_flame(flamespr)
-    spr(flamespr, ship_x, ship_y + 8)
+    spr(flamespr, ship.x, ship.y + 8)
 end
 
 function animate_flame(flamespr)
@@ -73,7 +77,11 @@ function starfield()
         else
             pset(s.x, s.y, col)
         end
+        if s.y>128 then
+            del(stars,s)
+        end
     end
+
 end
 
 
@@ -91,39 +99,51 @@ end
 
 function update_game()
 
-    shipspr = 2
+     ship.sx = 0
+    ship.sy = 0
+    ship.spr = 2
 
-    shipspd_x = 0
-    shipspd_y = 0
 
-    bully = bully - 2
+     for i=#buls,1,-1 do
+            local mybul = buls[i]
+            mybul.y = mybul.y - 4
+            if mybul.y < 4 then
+                del(buls,mybul)
+            end
+        end
 
     if btn(0) then
-        shipspd_x = -2
-        shipspr = 1
+        ship.sx = -2
+        ship.spr = 1
     end
 
     if btn(1) then
-        shipspd_x = 2
-        shipspr = 3
+        ship.sx = 2
+        ship.spr = 3
     end
 
     if btn(2) then
-        shipspd_y = -2
+        ship.sy = -2
     end
 
     if btn(3) then
-        shipspd_y = 2
+        ship.sy = 2
     end
 
      if btnp(5) then
-        bully = ship_y - 5
-        bullx = ship_x
-        spr(002, ship_x, ship_y)
+
+        local newbul = {}
+        newbul.x = ship.x
+        newbul.y = ship.y - 5
+        newbul.spr = 16
+       
+        add(buls, newbul)
+
+        spr(002, ship.x, ship.y)
         muzzle = 5
         sfx(0)
         score = score + 100
-        bombs = bombs - 1
+        --bombs = bombs - 1
     end
     if btnp(4) then
             mode = "Start"
@@ -135,23 +155,23 @@ function update_game()
     end
 
 
-    ship_x = ship_x + shipspd_x
-    ship_y = ship_y + shipspd_y
+    ship.x = ship.x + ship.sx
+    ship.y = ship.y + ship.sy
 
-    if ship_x>120 then
-        ship_x = 120
+    if ship.x>120 then
+        ship.x = 120
     end
 
-    if ship_x < 0 then
-        ship_x = 0
+    if ship.x < 0 then
+        ship.x = 0
     end
 
-     if ship_y>120 then
-        ship_y = 120
+     if ship.y>120 then
+        ship.y = 120
     end
 
-    if ship_y < 0 then
-        ship_y = 0
+    if ship.y < 0 then
+        ship.y = 0
     end
 
     flamespr = flamespr +1
@@ -168,21 +188,20 @@ function update_game()
     end
 
     animate_stars()
+    move_enemies()
 
     end
 
     function draw_game()
         cls()
     starfield()
-    draw_ship(shipspr)
+    draw_ship(ship.spr)
     draw_flame(flamespr)
-    spr(bulletspr, bullx, bully)
-    if bulletspr > 21 then
-        bulletspr = 16
-    end
+    draw_bullets()
+    draw_enemies()
     
     if muzzle > 0  then
-        circfill(ship_x + 4, ship_y - 1,muzzle, 7)
+        circfill(ship.x + 4, ship.y - 1,muzzle, 7)
     end
     print("score:" ..score, 40, 1, 12)
     
@@ -229,15 +248,16 @@ function update_game()
 
     function start_game()
         mode = "Game"
-        ship_x = 64
-        ship_y = 64
+        ship={}
+        ship.x = 64
+        ship.y = 64
+        ship.sx = 0
+        ship.sy = 0
+        ship.spr = 2
         mini = 99
-        shipspd_x = 0
-        shipspd_y = 0
-
+    
         bullx = 64
         bully= -10
-        shipspr = 2
         flamespr = 5
         muzzle = 0
         bulletspr = 16
@@ -266,14 +286,6 @@ function update_game()
         end
     end
 
-  
-    
-    
-
-    -----stars-----
-
-
-
     function game_over()
         cls(8)
         print("game over!", 50, 50, blink())
@@ -288,6 +300,54 @@ function update_game()
         end
         return eanim[blinkt]
     end
+
+    function draw_bullets()
+        for i=1,#buls do
+            local mybul = buls[i]
+            drwmyspr(mybul)
+        end
+        
+    end
+
+    function draw_enemies()
+
+        for i=1,#enemies do
+            local myen = enemies[i]
+            drwmyspr(myen)
+        end
+        
+    end
+
+
+    function create_enemies()
+            for i=0,120, 12 do
+            local myen = {}
+            myen.x = i + 10
+            myen.y = 5
+            myen.spr = 36
+            add(enemies,myen)
+        end
+    end
+
+    function move_enemies()
+
+        for myen in all(enemies) do
+            myen.y += 1
+            myen.spr +=0.5
+             if myen.spr >= 43 then
+                myen.spr = 36
+            end
+
+            if myen.y >128 then
+            del(enemies,myen)
+        end
+        end
+    end
+
+    function drwmyspr(myspr)
+        spr(myspr.spr,myspr.x, myspr.y)
+    end
+
 
 
    
